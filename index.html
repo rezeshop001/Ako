@@ -272,6 +272,21 @@
   }
   .dot.active { background: var(--rose); transform: scale(1.35); }
 
+  /* ── MUSIC BUTTON ── */
+  .music-btn {
+    position: fixed; top: 1rem; right: 1rem; z-index: 200;
+    display: flex; align-items: center; gap: 0.4rem;
+    background: rgba(255,255,255,0.75); color: var(--deep);
+    border: 2px solid #c4b8ea; border-radius: 50px;
+    padding: 0.55rem 1rem; font-family: 'Lato', 'Noto Sans Myanmar', sans-serif;
+    font-size: 0.9rem; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(155,123,255,0.3);
+    backdrop-filter: blur(6px);
+    transition: transform 0.15s, background 0.2s;
+  }
+  .music-btn:hover { background: #fff; transform: scale(1.05); }
+  .music-btn:active { transform: scale(0.96); }
+
   @media (max-width: 420px) {
     .btn-group { gap: 0.6rem; }
     .sticker { font-size: 1.5rem; }
@@ -279,6 +294,9 @@
 </style>
 </head>
 <body>
+
+<audio id="bgm" src="song.mp3" loop preload="auto"></audio>
+<button class="music-btn" id="musicBtn" onclick="toggleMusic(event)">⏹ Stop</button>
 
 <div id="bg-canvas"></div>
 <div class="page-dots" id="pageDots"></div>
@@ -446,6 +464,32 @@
 
   const TOTAL_PAGES = 12; // page1 + escape1-10 + page-yes
   let currentPageId = 'page1';
+
+  // ── Music: autoplay, with fallback to first tap if the browser blocks it ──
+  const bgm = document.getElementById('bgm');
+  const musicBtn = document.getElementById('musicBtn');
+  let userStopped = false;
+  function updateMusicBtn() {
+    musicBtn.textContent = bgm.paused ? '▶ Play' : '⏹ Stop';
+  }
+  function tryPlay() {
+    if (userStopped) return;
+    bgm.play().then(updateMusicBtn).catch(() => { updateMusicBtn(); });
+  }
+  function toggleMusic(e) {
+    e.stopPropagation();
+    if (bgm.paused) { userStopped = false; bgm.play().then(updateMusicBtn); }
+    else { userStopped = true; bgm.pause(); updateMusicBtn(); }
+  }
+  bgm.addEventListener('play', updateMusicBtn);
+  bgm.addEventListener('pause', updateMusicBtn);
+  tryPlay();
+  ['click', 'touchstart', 'keydown'].forEach(ev =>
+    document.addEventListener(ev, function once() {
+      if (bgm.paused) tryPlay();
+      if (!bgm.paused || userStopped) document.removeEventListener(ev, once);
+    }, { passive: true })
+  );
 
   // ── Page dots ──
   const dotsEl = document.getElementById('pageDots');
