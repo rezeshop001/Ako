@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>💜 Do u love me?</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Dancing+Script:wght@600;700&family=Lato:wght@300;400&family=Noto+Sans+Myanmar:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --rose: #9B7BFF;
+    --deep: #6A3FB5;
+    --cream: #EAF4FF;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: var(--cream);
+    font-family: 'Lato', 'Noto Sans Myanmar', sans-serif;
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ctext y='20' font-size='20'%3E🪻%3C/text%3E%3C/svg%3E") 12 12, auto;
+  }
+
+  /* ── BACKGROUND HEARTS ── */
+  #bg-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .float-heart {
+    position: absolute; bottom: -60px; font-size: 1.4rem;
+    animation: floatUp linear infinite; opacity: 0; pointer-events: none;
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(0) rotate(0deg) scale(0.5); opacity: 0; }
+    10%  { opacity: 0.7; }
+    90%  { opacity: 0.5; }
+    100% { transform: translateY(-110vh) rotate(360deg) scale(1.2); opacity: 0; }
+  }
+
+  /* ── PETALS ── */
+  .petal {
+    position: fixed; top: -40px; font-size: 1.2rem;
+    pointer-events: none; z-index: 1;
+    animation: petalFall linear forwards; opacity: 0;
+  }
+  @keyframes petalFall {
+    0%   { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0.9; }
+    100% { transform: translateY(110vh) translateX(60px) rotate(360deg); opacity: 0; }
+  }
+
+  /* ── PAGES ── */
+  .page {
+    position: fixed; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 2rem;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.6s ease;
+    z-index: 10;
+  }
+  .page.active { opacity: 1; pointer-events: all; }
+
+  /* ── STICKER RING ── */
+  .sticker-ring { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .sticker {
+    position: absolute; font-size: 2rem;
+    animation: stickerFloat 4s ease-in-out infinite;
+    filter: drop-shadow(0 2px 8px rgba(155,123,255,0.3));
+  }
+  @keyframes stickerFloat {
+    0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); }
+    50%       { transform: translateY(-12px) rotate(calc(var(--r, 0deg) + 8deg)); }
+  }
+
+  /* ── SHARED PAGE BACKGROUNDS ── */
+  #page1    { background: radial-gradient(ellipse at 50% 60%, #d6eaff, var(--cream) 70%); }
+  #escape1  { background: radial-gradient(ellipse at 60% 40%, #cfe3ff, var(--cream) 72%); }
+  #escape2  { background: radial-gradient(ellipse at 35% 55%, #dcecff, var(--cream) 72%); }
+  #escape3  { background: radial-gradient(ellipse at 55% 45%, #d9ebff, var(--cream) 72%); }
+  #escape4  { background: radial-gradient(ellipse at 45% 60%, #d2e6ff, var(--cream) 72%); }
+  #escape5  { background: radial-gradient(ellipse at 65% 35%, #dbe9ff, var(--cream) 72%); }
+  #escape6  { background: radial-gradient(ellipse at 40% 50%, #e0e0ff, var(--cream) 72%); }
+  #escape7  { background: radial-gradient(ellipse at 55% 55%, #d8e6ff, var(--cream) 72%); }
+  #escape8  { background: radial-gradient(ellipse at 50% 40%, #e4eaff, var(--cream) 72%); }
+  #escape9  { background: radial-gradient(ellipse at 45% 55%, #cfe3ff, var(--cream) 72%); }
+  #escape10 { background: radial-gradient(ellipse at 60% 45%, #dcecff, var(--cream) 72%); }
+  #page-yes { background: radial-gradient(ellipse at 50% 40%, #d6eaff, #f4f9ff 80%); }
+
+  /* ── TYPOGRAPHY ── */
+  .main-title {
+    font-family: 'Dancing Script', 'Noto Sans Myanmar', cursive;
+    font-size: clamp(2.2rem, 8vw, 4.5rem);
+    color: var(--deep); line-height: 1.2;
+    margin-bottom: 0.4rem;
+    animation: titlePulse 3s ease-in-out infinite;
+    text-shadow: 0 4px 20px rgba(106,63,181,0.2);
+  }
+  @keyframes titlePulse {
+    0%, 100% { transform: scale(1); }
+    50%       { transform: scale(1.03); }
+  }
+
+  .subtitle {
+    font-family: 'Playfair Display', 'Noto Sans Myanmar', serif; font-style: italic;
+    font-size: clamp(0.95rem, 3vw, 1.2rem);
+    color: #7a6aa8; margin-bottom: 2rem;
+  }
+
+  .escape-emoji {
+    font-size: clamp(3rem, 11vw, 5.5rem);
+    display: block; margin-bottom: 0.8rem;
+    animation: wiggle 1.6s ease-in-out infinite;
+  }
+  @keyframes wiggle {
+    0%,100% { transform: rotate(-8deg); }
+    50%      { transform: rotate(8deg); }
+  }
+
+  .escape-title {
+    font-family: 'Dancing Script', 'Noto Sans Myanmar', cursive;
+    font-size: clamp(1.7rem, 6.5vw, 3.2rem);
+    color: var(--deep); margin-bottom: 0.7rem; line-height: 1.6;
+  }
+
+  .escape-body {
+    font-family: 'Playfair Display', 'Noto Sans Myanmar', serif; font-style: italic;
+    font-size: clamp(0.85rem, 2.6vw, 1.1rem);
+    color: #4a3a7a; max-width: 480px;
+    line-height: 2; margin-bottom: 1.8rem;
+  }
+
+  .big-heart {
+    font-size: clamp(3.5rem, 13vw, 7rem);
+    display: block;
+    animation: heartbeat 1.2s ease-in-out infinite;
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 8px 24px rgba(155,123,255,0.5));
+  }
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    14%       { transform: scale(1.15); }
+    28%       { transform: scale(1); }
+    42%       { transform: scale(1.1); }
+    70%       { transform: scale(1); }
+  }
+
+  /* ── BUTTON GROUP — always two buttons side by side ── */
+  .btn-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
+    max-width: 500px;
+    flex-wrap: nowrap;
+  }
+
+  /* YES button */
+  .btn-yes {
+    background: linear-gradient(135deg, var(--rose), var(--deep));
+    color: #fff;
+    border: none;
+    padding: 1rem 1.8rem;
+    border-radius: 50px;
+    font-family: 'Dancing Script', 'Noto Sans Myanmar', cursive;
+    font-size: clamp(1.2rem, 4.5vw, 1.8rem);
+    cursor: pointer;
+    box-shadow: 0 8px 28px rgba(155,123,255,0.45);
+    transition: transform 0.15s, box-shadow 0.15s, font-size 0.5s ease, padding 0.5s ease;
+    position: relative; overflow: hidden;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .btn-yes::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, #fff3 0%, transparent 60%);
+    border-radius: 50px;
+  }
+  .btn-yes:hover { transform: scale(1.06); box-shadow: 0 12px 38px rgba(155,123,255,0.6); }
+  .btn-yes:active { transform: scale(0.97); }
+
+  /* YES size grows as no is clicked */
+  .btn-yes.grow-1  { font-size: clamp(1.35rem, 5vw,   2rem);   padding: 1.05rem 2rem; }
+  .btn-yes.grow-2  { font-size: clamp(1.5rem,  5.5vw, 2.2rem); padding: 1.1rem  2.2rem; }
+  .btn-yes.grow-3  { font-size: clamp(1.65rem, 6vw,   2.5rem); padding: 1.15rem 2.4rem; }
+  .btn-yes.grow-4  { font-size: clamp(1.8rem,  6.5vw, 2.8rem); padding: 1.2rem  2.6rem; }
+  .btn-yes.grow-5  { font-size: clamp(2rem,    7vw,   3.1rem); padding: 1.25rem 2.8rem; }
+  .btn-yes.grow-6  { font-size: clamp(2.2rem,  7.5vw, 3.4rem); padding: 1.3rem  3rem; }
+  .btn-yes.grow-7  { font-size: clamp(2.4rem,  8vw,   3.7rem); padding: 1.35rem 3.2rem; }
+  .btn-yes.grow-8  { font-size: clamp(2.6rem,  8.5vw, 4rem);   padding: 1.4rem  3.4rem; }
+  .btn-yes.grow-9  { font-size: clamp(2.8rem,  9vw,   4.3rem); padding: 1.45rem 3.6rem; }
+  .btn-yes.grow-10 { font-size: clamp(3rem,    9.5vw, 4.6rem); padding: 1.5rem  3.8rem; }
+
+  /* NO button */
+  .btn-no {
+    background: transparent;
+    color: #8a7ac0;
+    border: 2px solid #c4b8ea;
+    padding: 0.9rem 1.6rem;
+    border-radius: 50px;
+    font-family: 'Lato', 'Noto Sans Myanmar', sans-serif;
+    font-size: clamp(0.82rem, 2.8vw, 1.05rem);
+    cursor: pointer;
+    transition: background 0.2s, font-size 0.5s ease, opacity 0.5s ease, padding 0.5s ease, min-width 0.5s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .btn-no:hover { background: #f1ecff; }
+
+  /* NO shrinks each click */
+  .btn-no.shrink-1  { font-size: 0.88rem; opacity: 0.82; }
+  .btn-no.shrink-2  { font-size: 0.74rem; opacity: 0.68; }
+  .btn-no.shrink-3  { font-size: 0.62rem; opacity: 0.54; padding: 0.8rem 1.3rem; }
+  .btn-no.shrink-4  { font-size: 0.52rem; opacity: 0.42; padding: 0.7rem 1.1rem; }
+  .btn-no.shrink-5  { font-size: 0.44rem; opacity: 0.32; padding: 0.65rem 1rem; }
+  .btn-no.shrink-6  { font-size: 0.36rem; opacity: 0.22; padding: 0.6rem 0.9rem; }
+  .btn-no.shrink-7  { font-size: 0.28rem; opacity: 0.14; padding: 0.55rem 0.8rem; }
+  .btn-no.shrink-8  { font-size: 0.2rem;  opacity: 0.08; padding: 0.5rem 0.7rem; }
+  .btn-no.shrink-9  { font-size: 0.14rem; opacity: 0.04; padding: 0.4rem 0.6rem; }
+  .btn-no.shrink-10 { font-size: 0.08rem; opacity: 0.01; padding: 0.3rem 0.5rem; }
+
+  /* ── YES PAGE ── */
+  .confetti-burst {
+    font-size: clamp(2.5rem, 9vw, 5rem); margin-bottom: 1rem; display: block;
+    animation: spinIn 0.6s cubic-bezier(.36,1.6,.3,1) both;
+  }
+  @keyframes spinIn {
+    from { transform: scale(0) rotate(-180deg); opacity: 0; }
+    to   { transform: scale(1) rotate(0deg);   opacity: 1; }
+  }
+  .yes-title {
+    font-family: 'Dancing Script', 'Noto Sans Myanmar', cursive;
+    font-size: clamp(1.8rem, 7vw, 3.6rem);
+    color: var(--deep); line-height: 1.5; margin-bottom: 1rem;
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+  @keyframes glow {
+    from { text-shadow: 0 0 10px rgba(155,123,255,0.3); }
+    to   { text-shadow: 0 0 30px rgba(155,123,255,0.8), 0 0 60px rgba(155,123,255,0.4); }
+  }
+  .yes-body {
+    font-family: 'Playfair Display', 'Noto Sans Myanmar', serif; font-style: italic;
+    font-size: clamp(0.95rem, 3.2vw, 1.3rem);
+    color: #4a3a7a; max-width: 460px; line-height: 2; margin-bottom: 1.5rem;
+  }
+  .hearts-row {
+    font-size: 1.8rem; letter-spacing: 0.3rem;
+    animation: bounceRow 1s ease-in-out infinite alternate;
+  }
+  @keyframes bounceRow {
+    from { transform: translateY(0); }
+    to   { transform: translateY(-8px); }
+  }
+
+  /* ── CONFETTI ── */
+  .confetti-particle {
+    position: fixed; pointer-events: none; font-size: 1.5rem;
+    animation: confettiFall 2.5s ease-in forwards; z-index: 999;
+  }
+  @keyframes confettiFall {
+    0%   { transform: translateY(-20px) rotate(0deg) scale(1); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg) scale(0.3); opacity: 0; }
+  }
+
+  /* ── PAGE DOTS ── */
+  .page-dots {
+    position: fixed; bottom: 1.2rem; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 7px; z-index: 100;
+  }
+  .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #c4b8ea; transition: background 0.3s, transform 0.3s;
+  }
+  .dot.active { background: var(--rose); transform: scale(1.35); }
+
+  @media (max-width: 420px) {
+    .btn-group { gap: 0.6rem; }
+    .sticker { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div id="bg-canvas"></div>
+<div class="page-dots" id="pageDots"></div>
+
+<!-- ══════════════════════════════
+     PAGE 1 — MAIN QUESTION
+══════════════════════════════ -->
+<div class="page active" id="page1">
+  <div class="sticker-ring"></div>
+  <span class="big-heart">💜</span>
+  <h1 class="main-title">Do u love me? 🪻</h1>
+  <p class="subtitle">သေချာစဉ်းစားပြီးမှ ဖြေပါနော်...</p>
+  <div class="btn-group">
+    <button class="btn-yes" id="btnYes" onclick="nextPage()">💜 ချစ်တယ်!</button>
+    <button class="btn-no"  id="btnNo"  onclick="nextPage()">မချစ်ဘူး</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     ESCAPE PAGE 1
+══════════════════════════════ -->
+<div class="page" id="escape1">
+  <div class="sticker-ring"></div>
+  <span class="escape-emoji">💙</span>
+  <h2 class="escape-title">သေချာလို့လား..?</h2>
+  <p class="escape-body">ညီက အကို့ရဲ့ နွေးထွေးတဲ့ဂရုစိုက်မှုတွေကြောင့် အကို့ကို ရင်ခုန်ခဲ့တာပါ။ အဲ့ဒီအချိန်တွေကို အကိုလည်း ပြန်စဉ်းစားကြည့်ပါဦးနော်။</p>
+  <div class="btn-group">
+    <button class="btn-yes" onclick="nextPage()">💜 ချစ်တယ်!</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     ESCAPE PAGE 2
+══════════════════════════════ -->
+<div class="page" id="escape2">
+  <div class="sticker-ring"></div>
+  <span class="escape-emoji">🥺</span>
+  <h2 class="escape-title">Breakup လိုက်တဲ့အချိန်</h2>
+  <p class="escape-body">အဲ့ဒီအချိန်တုန်းက အကို့ကို နေ့တိုင်းလိုလို သတိရနေခဲ့တာ။ ကျူရှင်သွားတိုင်း “လှည်းတန်း” ရောက်ရင်တောင် ငိုချင်ခဲ့တာ… အကိုရော မှတ်မိသေးလား။</p>
+  <div class="btn-group">
+    <button class="btn-yes" onclick="nextPage()">💜 ချစ်တယ်!</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     ESCAPE PAGE 3
+══════════════════════════════ -->
+<div class="page" id="escape3">
+  <div class="sticker-ring"></div>
+  <span class="escape-emoji">🔮</span>
+  <h2 class="escape-title">အမှတ်တရတွေ</h2>
+  <p class="escape-body">နောက်ဆို ညီတို့ရဲ့ အမှတ်တရတွေကို လွယ်လွယ်နဲ့ မဖျက်ပြစ်နဲ့နော်။ ညီ့အတွက် အဲ့ဒီအချိန်တွေက တကယ်တန်ဖိုးရှိလို့ပါ။</p>
+  <div class="btn-group">
+    <button class="btn-yes" onclick="nextPage()">💜 ချစ်တယ်!</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     ESCAPE PAGE 4
+══════════════════════════════ -->
+<div class="page" id="escape4">
+  <div class="sticker-ring"></div>
+  <span class="escape-emoji">🦋</span>
+  <h2 class="escape-title">စိတ်ရှုပ်လာရင် ထားခဲ့ဖို့ မတွေးပါနဲ့</h2>
+  <p class="escape-body">ညီတစ်ခါတလေ ရစ်မိတာ၊ အတွေးလွန်မိတာတွေကလည်း အကို့ကို အရမ်းချစ်ပြီး ဆုံးရှုံးမှာကြောက်ခဲ့လို့ပါ။ အကို့ကို စိတ်ရှုပ်စေမိခဲ့ရင် တောင်းပန်ပါတယ်။</p>
+  <div class="btn-group">
+    <button class="btn-yes" onclick="nextPage()">💜 ချစ်တယ်!</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     ESCAPE PAGE 5
+══════════════════════════════ -->
+<div class="page" id="escape5">
+  <div class="sticker-ring"></div>
+  <span class="escape-emoji">🪻</span>
+  <h2 class="escape-title">တောင်းပန်ပါတယ်</h2>
+  <p class="escape-body">ညီ အကို့အပေါ် တကယ်သစ္စာမဖောက်ခဲ့ပါဘူး။ တကယ်ပါ။ အဲ့နေ့က ညီရှင်းပြခဲ့တာတွေက အမှန်တွေပါ‌နော်။</p>
+  <div class="btn-group">
+    <button class="btn-yes" onclick="nextPage()">💜 ချစ်တယ်!</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     ESCAPE PAGE 6
+══════════════════════════════ -->
+<div class="page" id="escape6">
+  <div class="sticker-ring"></div>
+  <span class="escape-emoji">🫶</span>
+  <h2 class="escape-title">အရင်လို ပြန်ချစ်ကြမယ်နော်</h2>
+  <p class="escape-body">ညီလည်း အကိုစိတ်ခုစေမယ့်အလုပ်တွေ မလုပ်ဘူး။ အကိုလည်း ညီစိတ်ခုစေမယ့်အရာတွေကို ရှောင်ပေးပါနော်။</p>
+  <div class="btn-group">
+    <button class="btn-yes" onclick="nextPage()">💜 ချစ်တယ်!</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     ESCAPE PAGE 7
+══════════════════════════════ -->
+<div class="page" id="escape7">
+  <div class="sticker-ring"></div>
+  <span class="escape-emoji">🤝</span>
+  <h2 class="escape-title">ညှိယူသွားကြမယ်</h2>
+  <p class="escape-body">တစ်ယောက်နဲ့တစ်ယောက် နားလည်ပေးရင်း Long-term relationship ဖြစ်အောင် အဆင်ပြေသလို ညှိယူသွားကြမယ်နော်။</p>
+  <div class="btn-group">
+    <button class="btn-yes" onclick="nextPage()">💜 ချစ်တယ်!</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     ESCAPE PAGE 8
+══════════════════════════════ -->
+<div class="page" id="escape8">
+  <div class="sticker-ring"></div>
+  <span class="escape-emoji">🗣️</span>
+  <h2 class="escape-title">ရင်ဖွင့်ကြမယ်</h2>
+  <p class="escape-body">အခု စိတ်ထဲမရှင်းတာရှိရင် ပွင့်ပွင့်လင်းလင်း ပြောကြမယ်။ စိတ်ထဲမှာသိမ်းမထားဘဲ အရင်လို စိတ်ရှင်းရှင်းနဲ့ ပြန်ချစ်ကြမယ်နော်။</p>
+  <div class="btn-group">
+    <button class="btn-yes" onclick="nextPage()">💜 ချစ်တယ်!</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     ESCAPE PAGE 9
+══════════════════════════════ -->
+<div class="page" id="escape9">
+  <div class="sticker-ring"></div>
+  <span class="escape-emoji">🚪</span>
+  <h2 class="escape-title">ဒါက နောက်ဆုံးပါ</h2>
+  <p class="escape-body">ညီဘဝမှာ တစ်ခါမှ မလုပ်ဖူးတဲ့ “ပိတ်ပြီးသားတံခါးကို ပြန်ဖွင့်တာ” ကို အကို့အတွက် လုပ်ခဲ့တာပါ။ အရမ်းချစ်ပြီး သံယောဇဉ်တွယ်ခဲ့လို့ မခွဲနိုင်မှန်း ကိုယ့်ကိုယ်ကို သိခဲ့တာကြောင့်ပါ။</p>
+  <div class="btn-group">
+    <button class="btn-yes" onclick="nextPage()">💜 ချစ်တယ်!</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     ESCAPE PAGE 10
+══════════════════════════════ -->
+<div class="page" id="escape10">
+  <div class="sticker-ring"></div>
+  <span class="escape-emoji">💜</span>
+  <h2 class="escape-title">နောက်ဆုံးမျှော်လင့်ချက်</h2>
+  <p class="escape-body">အကိုဟာ ညီ့အတွက် ပထမဆုံးသူမဟုတ်ခဲ့ရင်တောင်… ညီ့ဘဝရဲ့ နောက်ဆုံးချစ်သူတော့ ဖြစ်ပါစေလို့ မျှော်လင့်ပါတယ်။ 💜</p>
+  <div class="btn-group">
+    <button class="btn-yes" onclick="nextPage()">💜 ချစ်တယ်!</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     YES PAGE — FINAL
+══════════════════════════════ -->
+<div class="page" id="page-yes">
+  <div class="sticker-ring"></div>
+  <span class="confetti-burst">🎉</span>
+  <h1 class="yes-title">Happy 8 Month Anniversary ပါ အကို 💙<br>💜 8.2.2026 💜</h1>
+  <p class="yes-body">ညီ့ကို ရွေးချယ်ပေးခဲ့တဲ့အတွက် ကျေးဇူးတင်ပါတယ်။ အကိုနဲ့အတူ အမြဲဘေးမှာရှိပြီး ဒီထက်ပိုကောင်းတဲ့နေ့ရက်တွေကို အတူတူဖြတ်သန်းသွားချင်ပါတယ်။ အကိုက ညီ့ဘဝရဲ့ အချစ်ရဆုံးချစ်သူပါဗျာ။ 💜</p>
+  <div class="hearts-row">💙 💜 🩵 💜 💙 🩵 💜</div>
+</div>
+
+<script>
+  const STICKERS = ['💜','💙','🦋','🪻','🔮','🌌','✨','⭐','🌙','🫧','💌','🍇','🫐','☁️','🩵','💎'];
+  const HEART_EMOJIS = ['💜','💙','🩵','🪻','✨','🔮'];
+  const PETALS = ['🪻','🦋','💜','🩵','💙'];
+  const CONF = ['💜','💙','🎉','🪻','✨','🦋','🩵','🔮','⭐'];
+
+  const TOTAL_PAGES = 12; // page1 + escape1-10 + page-yes
+  let currentPageId = 'page1';
+
+  // ── Page dots ──
+  const dotsEl = document.getElementById('pageDots');
+  for (let i = 0; i < TOTAL_PAGES; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    dotsEl.appendChild(d);
+  }
+  function setDot(idx) {
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+  }
+
+  // ── Sticker rings ──
+  document.querySelectorAll('.sticker-ring').forEach(ring => {
+    for (let i = 0; i < 8; i++) {
+      const s = document.createElement('span');
+      s.className = 'sticker';
+      s.textContent = STICKERS[Math.floor(Math.random() * STICKERS.length)];
+      const angle = (i / 8) * 360;
+      const radius = Math.min(window.innerWidth, window.innerHeight) * 0.39;
+      s.style.left = (50 + radius / window.innerWidth  * 100 * Math.cos(angle * Math.PI / 180)) + '%';
+      s.style.top  = (50 + radius / window.innerHeight * 100 * Math.sin(angle * Math.PI / 180)) + '%';
+      s.style.transform = 'translate(-50%,-50%)';
+      s.style.setProperty('--r', (Math.random() * 30 - 15) + 'deg');
+      s.style.animationDelay = (i * 0.5) + 's';
+      ring.appendChild(s);
+    }
+  });
+
+  // ── Floating hearts ──
+  const bgCanvas = document.getElementById('bg-canvas');
+  function spawnHeart() {
+    const h = document.createElement('span');
+    h.className = 'float-heart';
+    h.textContent = HEART_EMOJIS[Math.floor(Math.random() * HEART_EMOJIS.length)];
+    h.style.left = Math.random() * 100 + 'vw';
+    h.style.fontSize = (0.8 + Math.random() * 1.4) + 'rem';
+    const dur = 7 + Math.random() * 8;
+    h.style.animationDuration = dur + 's';
+    h.style.animationDelay = (Math.random() * 3) + 's';
+    bgCanvas.appendChild(h);
+    setTimeout(() => h.remove(), (dur + 5) * 1000);
+  }
+  setInterval(spawnHeart, 700);
+  for (let i = 0; i < 12; i++) spawnHeart();
+
+  // ── Petals ──
+  function spawnPetal() {
+    const p = document.createElement('span');
+    p.className = 'petal';
+    p.textContent = PETALS[Math.floor(Math.random() * PETALS.length)];
+    p.style.left = Math.random() * 100 + 'vw';
+    const dur = 4 + Math.random() * 5;
+    p.style.animationDuration = dur + 's';
+    p.style.animationDelay = (Math.random() * 2) + 's';
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), (dur + 3) * 1000);
+  }
+  setInterval(spawnPetal, 1100);
+
+  // ── Page transition ──
+  function goTo(newId, dotIdx) {
+    document.getElementById(currentPageId).classList.remove('active');
+    document.getElementById(newId).classList.add('active');
+    currentPageId = newId;
+    setDot(dotIdx);
+  }
+
+  // ── Next page (one step at a time) ──
+  let step = 0;
+  function nextPage() {
+    if (step >= TOTAL_PAGES - 1) return;
+    step++;
+    if (step === TOTAL_PAGES - 1) {
+      launchConfetti();
+      goTo('page-yes', step);
+    } else {
+      goTo('escape' + step, step);
+    }
+  }
+
+  // ── Confetti ──
+  function launchConfetti() {
+    for (let i = 0; i < 45; i++) {
+      const c = document.createElement('span');
+      c.className = 'confetti-particle';
+      c.textContent = CONF[Math.floor(Math.random() * CONF.length)];
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.top = '-30px';
+      c.style.animationDelay = (Math.random() * 1.5) + 's';
+      c.style.fontSize = (0.8 + Math.random() * 1.5) + 'rem';
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 4500);
+    }
+  }
+</script>
+</body>
+</html>
